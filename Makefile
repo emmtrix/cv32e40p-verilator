@@ -1,4 +1,5 @@
 APP ?= hello-world
+ELF := $(abspath build/fw/$(APP).elf)
 
 .PHONY: all firmware verilate run clean
 
@@ -11,7 +12,7 @@ verilate:
 	$(MAKE) -C tb verilate
 
 run: firmware
-	$(MAKE) -C tb APP=$(APP) run
+	$(MAKE) -C tb ELF=$(ELF) run
 
 clean:
 	$(MAKE) -C sw clean

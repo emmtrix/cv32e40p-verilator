@@ -16,17 +16,6 @@ FW_BUILD_DIR := $(BUILD_DIR)/fw
 VERI_BUILD_DIR := $(BUILD_DIR)/verilator
 VERI_OBJ_DIR := $(VERI_BUILD_DIR)/obj_dir
 
-APP ?= hello-world
-FW_ELF := $(FW_BUILD_DIR)/$(APP).elf
-RUN_HEX := $(FW_BUILD_DIR)/runtime.hex
-
-ELF ?=
-ifeq ($(strip $(ELF)),)
-RUN_ELF := $(FW_ELF)
-else
-RUN_ELF := $(ELF)
-endif
-
 SV_TB_SRCS := \
 	tb_top_verilator.sv \
 	tb_cv32e40p_cluster_wrapper.sv \
@@ -40,17 +29,14 @@ SV_TB_SRCS := \
 CPP_TB_SRC := $(abspath tb_top_verilator.cpp)
 SIM_EXE := $(VERI_OBJ_DIR)/Vtb_top_verilator
 
-.PHONY: run verilate firmware clean
+HEX := $(FW_BUILD_DIR)/runtime.hex
 
-run: verilate firmware
-	@test -f "$(RUN_ELF)" || { echo "Missing ELF: $(RUN_ELF)"; exit 1; }
-	$(OBJCOPY) -O verilog $(RUN_ELF) $(RUN_HEX)
-	$(SIM_EXE) +firmware=$(RUN_HEX) +maxcycles=$(MAXCYCLES)
+.PHONY: run verilate clean
 
-firmware:
-ifeq ($(strip $(ELF)),)
-	$(MAKE) -C ../sw APP=$(APP) firmware
-endif
+run: verilate
+	@test -f "$(ELF)" || { echo "Missing ELF: $(ELF)"; exit 1; }
+	$(OBJCOPY) -O verilog $(ELF) $(HEX)
+	$(SIM_EXE) +firmware=$(HEX) +maxcycles=$(MAXCYCLES)
 
 verilate: $(SIM_EXE)
 
