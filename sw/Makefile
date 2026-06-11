@@ -9,7 +9,7 @@ RISCV_ABI ?= ilp32
 APP_ARCH ?= $(RISCV_ARCH)
 APP_ABI ?= $(RISCV_ABI)
 APP_CFLAGS ?=
-APP_LIBS ?= -lc -lgcc
+APP_LIBS ?= -lc -lgcc -lm
 APP_LDFLAGS ?=
 CFLAGS := -Os -g -Wall -pedantic -mabi=$(APP_ABI) -march=$(APP_ARCH) $(APP_CFLAGS)
 
