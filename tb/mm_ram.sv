@@ -552,12 +552,14 @@ module mm_ram
         end
     end
 
-    // print to stdout pseudo peripheral
+    // print to stdout pseudo peripheral (also write to logfile if enabled)
     always_ff @(posedge clk_i, negedge rst_ni) begin: print_peripheral
         if(print_valid) begin
             if (use_log_file) begin
                 $fwrite(print_fd, "%c", print_wdata[7:0]);
-            end else if ($test$plusargs("verbose")) begin
+            end
+            
+            if ($test$plusargs("verbose")) begin
                 if (32 <= print_wdata && print_wdata < 128)
                     $display("OUT: '%c'", print_wdata[7:0]);
                 else
