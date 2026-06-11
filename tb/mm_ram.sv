@@ -208,8 +208,11 @@ module mm_ram
     // used by dump_signature methods
     string                         sig_file;
     string                         sig_string;
+    string                         log_file;
     bit                            use_sig_file;
+    bit                            use_log_file;
     int                            sig_fd;
+    int                            print_fd;
     int                            errno;
     string                         error_str;
 
@@ -234,6 +237,17 @@ module mm_ram
        transaction    = T_RAM;
 
     endfunction: setup_transaction
+
+    initial begin : configure_log_file
+        use_log_file = 1'b0;
+        if ($value$plusargs("log_file=%s", log_file)) begin
+            print_fd = $fopen(log_file, "w");
+            if (print_fd == 0) begin
+                $fatal(1, "[MM_RAM] can't open log file '%s'", log_file);
+            end
+            use_log_file = 1'b1;
+        end
+    end
 
     // uhh, align?
     always_comb data_addr_aligned = {data_addr_i[31:2], 2'b0};
@@ -541,7 +555,9 @@ module mm_ram
     // print to stdout pseudo peripheral
     always_ff @(posedge clk_i, negedge rst_ni) begin: print_peripheral
         if(print_valid) begin
-            if ($test$plusargs("verbose")) begin
+            if (use_log_file) begin
+                $fwrite(print_fd, "%c", print_wdata[7:0]);
+            end else if ($test$plusargs("verbose")) begin
                 if (32 <= print_wdata && print_wdata < 128)
                     $display("OUT: '%c'", print_wdata[7:0]);
                 else
@@ -553,6 +569,12 @@ module mm_ram
                 $fflush();
 `endif
             end
+        end
+    end
+
+    final begin : close_log_file
+        if (use_log_file) begin
+            $fclose(print_fd);
         end
     end
 

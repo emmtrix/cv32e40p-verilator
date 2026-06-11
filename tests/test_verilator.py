@@ -86,3 +86,11 @@ def test_example_applications_pass(
     output = result.stdout + result.stderr
     assert expected_pass_marker in output
     assert "[TB] SINGLE CORE EXIT SUCCESS" in output
+
+
+def test_hello_world_character_output_can_be_written_to_file(tmp_path: Path) -> None:
+    output_file = tmp_path / "hello-world.txt"
+    result = run_make("APP=hello-world", f"LOG_FILE={output_file}", "run")
+    output = result.stdout + result.stderr
+    assert "[TB] SINGLE CORE EXIT SUCCESS" in output
+    assert output_file.read_text() == "HELLO WORLD PASS\n"

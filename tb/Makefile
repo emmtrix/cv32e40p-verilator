@@ -10,6 +10,7 @@ VERILATOR ?= verilator
 VERI_CFLAGS ?= -O2
 VERI_TRACE ?=
 MAXCYCLES ?= 2000000
+LOG_FILE ?=
 
 BUILD_DIR ?= ../build
 FW_BUILD_DIR := $(BUILD_DIR)/fw
@@ -36,7 +37,7 @@ HEX := $(FW_BUILD_DIR)/runtime.hex
 run: verilate
 	@test -f "$(ELF)" || { echo "Missing ELF: $(ELF)"; exit 1; }
 	$(OBJCOPY) -O verilog $(ELF) $(HEX)
-	$(SIM_EXE) +firmware=$(HEX) +maxcycles=$(MAXCYCLES)
+	$(SIM_EXE) +firmware=$(HEX) +maxcycles=$(MAXCYCLES)$(if $(strip $(LOG_FILE)), +log_file=$(LOG_FILE),)
 
 verilate: $(SIM_EXE)
 
