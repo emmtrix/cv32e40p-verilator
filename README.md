@@ -65,3 +65,7 @@ make run VERI_TRACE=--trace VERI_CFLAGS="-O2 -DVCD_TRACE"
 ```
 
 The waveform file is written to `build/verilator/waves.vcd`.
+
+## License
+
+Licensed under the Apache 2.0 license.
