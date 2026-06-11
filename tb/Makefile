@@ -37,7 +37,7 @@ HEX := $(FW_BUILD_DIR)/runtime.hex
 run: verilate
 	@test -f "$(ELF)" || { echo "Missing ELF: $(ELF)"; exit 1; }
 	$(OBJCOPY) -O verilog $(ELF) $(HEX)
-	$(SIM_EXE) +firmware=$(HEX) +maxcycles=$(MAXCYCLES)$(if $(strip $(LOG_FILE)), +log_file=$(LOG_FILE),)
+	$(SIM_EXE) +firmware=$(HEX)$(if $(filter 0,$(MAXCYCLES)),, +maxcycles=$(MAXCYCLES))$(if $(strip $(LOG_FILE)), +log_file=$(LOG_FILE),)
 
 verilate: $(SIM_EXE)
 
